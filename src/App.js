@@ -15,8 +15,8 @@ const App = () => {
               <Row>
                 <Col>
                   <Routes>
-                    <Route path='/' element={<HomeScreen />} exact/>
-                    <Route path='/product/:id' element={<ProductScreen />}/>
+                    <Route path='/' element={<HomeScreen />} exact />
+                    <Route path='/product/:id' element={<ProductScreen />} />
                   </Routes>
                 </Col>
               </Row>
