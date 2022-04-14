@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
 import { FaShoppingCart, FaUserAlt } from 'react-icons/fa'
 import LinkContainer from 'react-router-bootstrap/LinkContainer'
 import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../actions/userActions'
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -11,6 +12,7 @@ const Header = () => {
 
   const logoutHandler = (e) => {
     e.preventDefault()
+    dispatch(logout())
     console.log('logout')
   }
   return (
