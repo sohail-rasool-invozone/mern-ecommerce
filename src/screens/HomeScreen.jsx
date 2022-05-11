@@ -3,6 +3,7 @@ import { Row, Col } from 'react-bootstrap'
 import Product from '../components/Product'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
+import { useParams } from 'react-router-dom'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { listProducts } from '../actions/productActions'
@@ -11,11 +12,14 @@ const HomeScreen = () => {
   const productList = useSelector((state) => state.productList)
   const { loading, products, error } = productList
 
+  const params = useParams()
+  const keyword = params.keyword
+
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(listProducts())
-  }, [dispatch])
+    dispatch(listProducts(keyword))
+  }, [dispatch, keyword])
   return (
     <>
       <h3 className='text-uppercase my-3'>Latest Products</h3>

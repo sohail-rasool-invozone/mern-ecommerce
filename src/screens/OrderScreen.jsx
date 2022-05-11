@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { Row, Col, Image, ListGroup } from 'react-bootstrap'
+import { Row, Col, Image, ListGroup, Button } from 'react-bootstrap'
 import { useSelector, useDispatch } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { Link } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
-import { getOrderDetails, payOrder } from '../actions/orderActions'
+import { Link, useParams, useNavigate } from 'react-router-dom'
+import {
+  getOrderDetails,
+  payOrder,
+  deliverOrder,
+} from '../actions/orderActions'
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
-import { ORDER_PAY_RESET } from '../constants/orderConstants'
+import {
+  ORDER_PAY_RESET,
+  ORDER_DELIVER_RESET,
+} from '../constants/orderConstants'
 
 const OrderScreen = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const params = useParams()
   const orderId = params.id
 
@@ -23,7 +30,17 @@ const OrderScreen = () => {
   const orderPay = useSelector((state) => state.orderPay)
   const { loading: loadingPay, success: succesPay } = orderPay
 
+  const orderDeliver = useSelector((state) => state.orderDeliver)
+  const { loading: loadingDeliver, success: succesDeliver } = orderDeliver
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
   useEffect(() => {
+    if (!userInfo) {
+      navigate('/login')
+    }
+
     const addPayPalScript = async () => {
       const { data: clientId } = await axios.get('/api/config/paypal')
       const script = document.createElement('script')
@@ -36,8 +53,9 @@ const OrderScreen = () => {
       document.body.appendChild(script)
     }
 
-    if (!order || succesPay) {
+    if (!order || succesPay || succesDeliver) {
       dispatch({ type: ORDER_PAY_RESET })
+      dispatch({ type: ORDER_DELIVER_RESET })
       dispatch(getOrderDetails(orderId))
     } else if (!order.isPaid) {
       if (!window.paypal) {
@@ -46,7 +64,11 @@ const OrderScreen = () => {
         setSdkReady(true)
       }
     }
-  }, [dispatch, order, orderId, succesPay])
+  }, [dispatch, order, orderId, succesPay, succesDeliver, navigate, userInfo])
+
+  const deliverHandler = () => {
+    dispatch(deliverOrder(orderId))
+  }
 
   return (
     <>
@@ -80,7 +102,7 @@ const OrderScreen = () => {
                   </p>
                   {order.isDelivered ? (
                     <Message variant='success'>
-                      Delivered on {order.deliveredAt}
+                      Delivered on {order.deliveredAt.substring(0, 10)}
                     </Message>
                   ) : (
                     <Message variant='danger'>Not Delivered</Message>
@@ -93,7 +115,9 @@ const OrderScreen = () => {
                     {order.paymentMethod}
                   </p>
                   {order.isPaid ? (
-                    <Message variant='success'>Paid on {order.paidAt}</Message>
+                    <Message variant='success'>
+                      Paid on {order.paidAt.substring(0, 10)}
+                    </Message>
                   ) : (
                     <Message variant='danger'>Not Paid</Message>
                   )}
@@ -195,6 +219,21 @@ const OrderScreen = () => {
                     )}
                   </ListGroup.Item>
                 )}
+                {loadingDeliver && <Loader />}
+                {userInfo &&
+                  userInfo.isAdmin &&
+                  order.isPaid &&
+                  !order.isDelivered && (
+                    <ListGroup.Item>
+                      <Button
+                        type='button'
+                        className='btn btn-block w-100'
+                        onClick={deliverHandler}
+                      >
+                        Mark as delivered
+                      </Button>
+                    </ListGroup.Item>
+                  )}
               </ListGroup>
             </Col>
           </Row>

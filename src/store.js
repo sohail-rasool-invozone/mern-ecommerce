@@ -1,7 +1,7 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import thunk from 'redux-thunk'
-import { composeWithDevTools } from 'redux-devtools-extension'
-import { cartReducer } from './reducers/cartReducer'
+import { createStore, combineReducers, applyMiddleware } from "redux"
+import thunk from "redux-thunk"
+import { composeWithDevTools } from "redux-devtools-extension"
+import { cartReducer } from "./reducers/cartReducer"
 
 import {
   productListReducer,
@@ -9,7 +9,8 @@ import {
   productDeleteReducer,
   productCreateReducer,
   productUpdateReducer,
-} from './reducers/productReducers'
+  productReviewCreateReducer,
+} from "./reducers/productReducers"
 
 import {
   userLoginReducer,
@@ -19,7 +20,7 @@ import {
   userListReducer,
   userDeleteReducer,
   userUpdateReducer,
-} from './reducers/userReducer'
+} from "./reducers/userReducer"
 
 import {
   orderCreateReducer,
@@ -27,18 +28,19 @@ import {
   orderPayReducer,
   orderListMyReducer,
   orderListReducer,
-} from './reducers/orderReducer'
+  orderDeliverReducer,
+} from "./reducers/orderReducer"
 
-const cartItemsFromStrorage = localStorage.getItem('cartItems')
-  ? JSON.parse(localStorage.getItem('cartItems'))
+const cartItemsFromStrorage = localStorage.getItem("cartItems")
+  ? JSON.parse(localStorage.getItem("cartItems"))
   : []
 
-const userInfoFromStorage = localStorage.getItem('userInfo')
-  ? JSON.parse(localStorage.getItem('userInfo'))
+const userInfoFromStorage = localStorage.getItem("userInfo")
+  ? JSON.parse(localStorage.getItem("userInfo"))
   : null
 
-const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
-  ? JSON.parse(localStorage.getItem('shippingAddress'))
+const shippingAddressFromStorage = localStorage.getItem("shippingAddress")
+  ? JSON.parse(localStorage.getItem("shippingAddress"))
   : {}
 
 const reducer = combineReducers({
@@ -47,6 +49,7 @@ const reducer = combineReducers({
   productDelete: productDeleteReducer,
   productCreate: productCreateReducer,
   productUpdate: productUpdateReducer,
+  productReviewCreate: productReviewCreateReducer,
   cart: cartReducer,
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
@@ -58,6 +61,7 @@ const reducer = combineReducers({
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
   orderPay: orderPayReducer,
+  orderDeliver: orderDeliverReducer,
   orderListMy: orderListMyReducer,
   orderList: orderListReducer,
 })
